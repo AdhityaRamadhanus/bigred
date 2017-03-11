@@ -99,6 +99,10 @@ func (b *Bigred) executeCommand(cmd *Commands, conn net.Conn) error {
 		dbsize := b.Cache.Len()
 		_, err := conn.Write([]byte(":" + strconv.Itoa(dbsize) + "\r\n"))
 		return err
+	case "flushall":
+		b.Cache.Reset()
+		_, err := conn.Write([]byte("+OK\r\n"))
+		return err
 	case "ping":
 		conn.Write([]byte("+PONG\r\n"))
 		return nil
