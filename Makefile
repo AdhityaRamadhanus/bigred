@@ -7,7 +7,8 @@ GO_FLAGS = -race -o
 
 default: clean build_bigred
 
-quick_build: go build -o bigred
+quick_build: 
+	go build -o bigred
 
 build_bigred: 
 	go build $(GO_FLAGS) bigred

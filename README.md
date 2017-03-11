@@ -30,8 +30,12 @@ Usage
     2. SET <key> <value>
     3. DBSIZE //Currently only using one db
     4. DEL <key>
-    5. PING // of course
+    5. FLUSHALL
+    6. PING // of course
 ```
+
+![screenshot](https://cloud.githubusercontent.com/assets/5761975/23824951/5b5e9c2a-06b3-11e7-8e9c-c68dc4ff45f4.png)
+
 
 License
 ----
