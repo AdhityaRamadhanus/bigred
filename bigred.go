@@ -5,8 +5,6 @@ import (
 	"net"
 	"time"
 
-	"strconv"
-
 	"github.com/allegro/bigcache"
 )
 
@@ -17,6 +15,7 @@ type Bigred struct {
 }
 
 func NewBigRed(proto, addr string) (*Bigred, error) {
+	// TODO : parameterized the default config
 	cache, err := bigcache.NewBigCache(bigcache.DefaultConfig(1 * time.Minute))
 	if err != nil {
 		return nil, err
@@ -44,70 +43,59 @@ func (b *Bigred) Run() error {
 }
 
 func (b *Bigred) handleClient(conn net.Conn) (err error) {
-	defer conn.Close()
+	defer func() {
+		if err != nil {
+			log.Println(err)
+		}
+		conn.Close()
+	}()
 	for {
 		commands, err := ParseRequest(conn)
-		if err == nil {
-			if err := b.executeCommand(commands, conn); err != nil {
-				log.Println(err)
-			}
+		if err != nil {
+			return err
+		}
+		if err := b.executeCommand(commands, conn); err != nil {
+			return err
 		}
 	}
+	return nil
 }
 
+// Since only a few method will be supported, i figure why not just using switch case
 func (b *Bigred) executeCommand(cmd *Commands, conn net.Conn) error {
 	switch cmd.Name {
 	case "get":
 		if len(cmd.Args) < 1 {
-			_, err := conn.Write([]byte("-ERR wrong number of arguments for 'get' command\r\n"))
-			return err
+			return replyErrArgLength(conn, cmd.Name)
 		}
 		bytes, err := b.Cache.Get(cmd.Args[0])
 		if err != nil || len(bytes) == 0 {
-			_, err := conn.Write([]byte("$-1\r\n"))
-			return err
+			return replyNil(conn)
 		}
-		_, err = conn.Write([]byte("$" + strconv.Itoa(len(bytes)) + "\r\n"))
-		if err != nil {
-			return err
-		}
-		_, err = conn.Write(bytes)
-		if err != nil {
-			return err
-		}
-		_, err = conn.Write([]byte("\r\n"))
-		return err
+		return replyBulkString(conn, bytes)
 	case "set":
 		if len(cmd.Args) < 2 {
-			_, err := conn.Write([]byte("-ERR wrong number of arguments for 'set' command\r\n"))
-			return err
+			return replyErrArgLength(conn, cmd.Name)
 		}
 		b.Cache.Set(cmd.Args[0], []byte(cmd.Args[1]))
-		_, err := conn.Write([]byte("+OK\r\n"))
-		return err
+		return replyOK(conn)
 	case "del":
 		if len(cmd.Args) == 0 {
-			_, err := conn.Write([]byte("-ERR wrong number of arguments for 'del' command\r\n"))
-			return err
+			return replyErrArgLength(conn, cmd.Name)
 		}
 		for _, key := range cmd.Args {
 			b.Cache.Set(key, nil)
 		}
-		_, err := conn.Write([]byte(":" + strconv.Itoa(len(cmd.Args)) + "\r\n"))
-		return err
+		return replyInteger(conn, len(cmd.Args))
 	case "dbsize":
 		dbsize := b.Cache.Len()
-		_, err := conn.Write([]byte(":" + strconv.Itoa(dbsize) + "\r\n"))
-		return err
+		return replyInteger(conn, dbsize)
 	case "flushall":
 		b.Cache.Reset()
-		_, err := conn.Write([]byte("+OK\r\n"))
-		return err
+		return replyOK(conn)
 	case "ping":
-		conn.Write([]byte("+PONG\r\n"))
-		return nil
+		return replySimpleString(conn, "PONG")
 	default:
-		conn.Write([]byte("-ERR unknown command '" + cmd.Name + "'\r\n"))
-		return nil
+		return replyErrUnknownCommand(conn, cmd.Name)
 	}
 }
