@@ -2,8 +2,6 @@ package main
 
 import "strconv"
 
-const ()
-
 func respSimpleString(payload string) []byte {
 	return []byte("+" + payload + "\r\n")
 }

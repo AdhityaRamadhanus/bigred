@@ -62,7 +62,7 @@ func (b *Bigred) handleClient(conn net.Conn) (err error) {
 			return err
 		}
 	}
-	return nil
+	// return nil
 }
 
 // Since only a few method will be supported, i figure why not just using switch case

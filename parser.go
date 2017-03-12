@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-
 	"strings"
 
 	"github.com/pkg/errors"
@@ -67,7 +66,7 @@ func parseBulkString(r *bufio.Reader) ([]byte, error) {
 	}
 
 	if len(data) != argSize {
-		return nil, errors.New("Lenght of actual data not same as in meta data")
+		return nil, errors.New("Length of actual data not same as in meta data")
 	}
 
 	if b, err := r.ReadByte(); err != nil || b != '\r' {
