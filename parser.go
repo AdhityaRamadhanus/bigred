@@ -23,7 +23,7 @@ func ParseRequest(conn io.ReadCloser) (*Commands, error) {
 	reader := bufio.NewReader(conn)
 	requestStr, err := reader.ReadString('\n')
 	if err != nil {
-		return nil, errors.Wrap(err, "can't parse new line")
+		return nil, err
 	}
 	// Request should come as an array of resp bulk string
 	if requestStr[0] == '*' {

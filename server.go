@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	addr  = flag.String("addr", "localhost:6399", "net address")
+	addr  = flag.String("addr", ":6399", "net address")
 	proto = flag.String("port", "tcp", "protocol")
 )
 
@@ -16,6 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Bigred server is running at", *addr)
 	if err := bigred.Run(); err != nil {
 		log.Fatal(err)
 	}

@@ -42,14 +42,17 @@ func (b *Bigred) Run() error {
 		if err != nil {
 			return err
 		}
+		log.Println("Accepting Connection", conn.RemoteAddr().String())
 		go b.handleClient(conn)
 	}
 }
 
 func (b *Bigred) handleClient(conn net.Conn) (err error) {
 	defer func() {
-		if err != nil {
+		if err != nil && err.Error() != "EOF" {
 			log.Println(err)
+		} else {
+			log.Println("Closing Connection")
 		}
 		conn.Close()
 	}()
