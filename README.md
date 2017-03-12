@@ -1,6 +1,6 @@
 # BIGRED
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/AdhityaRamadhanus/bigred)](https://goreportcard.com/report/github.com/AdhityaRamadhanus/bigred)
+[![Go Report Card](https://goreportcard.com/badge/github.com/AdhityaRamadhanus/bigred)](https://goreportcard.com/report/github.com/AdhityaRamadhanus/bigred)  [![codebeat badge](https://codebeat.co/badges/07a83b1f-0cae-4ed9-8c56-67e526909798)](https://codebeat.co/projects/github-com-adhityaramadhanus-bigred-master)
 
 Cache server with [Big Cache](https://github.com/allegro/bigcache) engine and redis ([resp](https://redis.io/topics/protocol)) protocol
 
