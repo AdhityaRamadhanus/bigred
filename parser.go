@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Commands is request from redis client, consist of name and args
 type Commands struct {
 	Name string
 	Args []string

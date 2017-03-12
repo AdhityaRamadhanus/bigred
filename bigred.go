@@ -8,12 +8,15 @@ import (
 	"github.com/allegro/bigcache"
 )
 
+// Bigred is the main service struct consist of cache engine bigcache
 type Bigred struct {
 	Proto string
 	Addr  string
 	Cache *bigcache.BigCache
 }
 
+// NewBigRed is Bigred constructor accepting proto and addr
+// Ex: NewBigRed("tcp", "localhost:6399")
 func NewBigRed(proto, addr string) (*Bigred, error) {
 	// TODO : parameterized the default config
 	cache, err := bigcache.NewBigCache(bigcache.DefaultConfig(1 * time.Minute))
@@ -27,6 +30,7 @@ func NewBigRed(proto, addr string) (*Bigred, error) {
 	}, nil
 }
 
+// Run is the main loop of Bigred service
 func (b *Bigred) Run() error {
 	l, err := net.Listen(b.Proto, b.Addr)
 	defer l.Close()
