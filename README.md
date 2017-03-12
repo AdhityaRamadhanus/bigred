@@ -1,19 +1,19 @@
 # BIGRED
 
-Cache server with BigCache engine and redis (resp) protocol
+[![Go Report Card](https://goreportcard.com/badge/github.com/AdhityaRamadhanus/bigred)](https://goreportcard.com/report/github.com/AdhityaRamadhanus/bigred)
+
+Cache server with [Big Cache](https://github.com/allegro/bigcache) engine and redis ([resp](https://redis.io/topics/protocol)) protocol
 
 <p>
-  <a href="#Installation">Installation |</a>
-  <a href="#Usage">Usage</a> |
+  <a href="#installation">Installation |</a>
+  <a href="#usage">Usage</a> |
   <a href="#licenses">License</a>
   <br><br>
   <blockquote>
-	cache server with BigCache engine and redis (resp) protocol. You can use any redis client to use this server since it comply with resp protocol. Unfortunately, due to the design of BigCache and some constraint, only some of redis command is implemented. The list of the commands can be found in <a href="#Usage">Usage</a>
-
-    This project still in progress
-
-    Tested with redis-cli
+	cache server with BigCache engine and redis (resp) protocol. You can use any redis client to use this server since it comply with resp protocol. Unfortunately, due to the design of BigCache and some constraint, only some of redis command is implemented. The list of the commands can be found in <a href="#usage">Usage</a>
   </blockquote>
+  This project still in progress<br>
+  Tested with redis-cli
 </p>
 
 Installation
