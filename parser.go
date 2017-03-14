@@ -11,6 +11,8 @@ import (
 )
 
 // Commands is request from redis client, consist of name and args
+// Commands Name is the supported redis commands like get, set, flushall, info, dbsize, del, etc
+// Commands Args is the corresponding arguments to each command defined above
 type Commands struct {
 	Name string
 	Args []string
@@ -19,6 +21,12 @@ type Commands struct {
 // Taken from https://github.com/docker/go-redis-server/blob/master/parser.go
 
 // ParseRequest Parsing Request from redis client and return Commands which consist of a command name and its arguments
+// Example :
+// Request : *2\r\n$3\r\nGET\r\n$5\r\nmykey\r\n$
+/* Commands : {
+	Name: GET,
+	Args: [mykey]
+}*/
 func ParseRequest(conn io.ReadCloser) (*Commands, error) {
 	reader := bufio.NewReader(conn)
 	requestStr, err := reader.ReadString('\n')
@@ -50,16 +58,19 @@ func ParseRequest(conn io.ReadCloser) (*Commands, error) {
 }
 
 func parseBulkString(r *bufio.Reader) ([]byte, error) {
-
+	// Get the first line
+	// first line contain the number of elements in the array of bulk string in the request
 	line, err := r.ReadString('\n')
 	if err != nil {
 		return nil, errors.New("Malformed resp string")
 	}
+	// Get the number of array elements
 	var argSize int
 	if _, err := fmt.Sscanf(line, "$%d", &argSize); err != nil {
 		return nil, errors.New("Failed to get string length")
 	}
 
+	// Read the request
 	data, err := ioutil.ReadAll(io.LimitReader(r, int64(argSize)))
 	if err != nil {
 		return nil, err
@@ -69,6 +80,7 @@ func parseBulkString(r *bufio.Reader) ([]byte, error) {
 		return nil, errors.New("Length of actual data not same as in meta data")
 	}
 
+	// Find the resp \r\n bytes
 	if b, err := r.ReadByte(); err != nil || b != '\r' {
 		return nil, errors.New("Missing CR")
 	}
