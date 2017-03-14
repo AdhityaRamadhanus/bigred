@@ -5,14 +5,21 @@ import (
 	"net"
 	"time"
 
+	"fmt"
+	"os"
+	"runtime"
+
+	"path/filepath"
+
 	"github.com/allegro/bigcache"
 )
 
 // Bigred is the main service struct consist of cache engine bigcache
 type Bigred struct {
-	Proto string
-	Addr  string
-	Cache *bigcache.BigCache
+	Proto   string
+	Addr    string
+	Cache   *bigcache.BigCache
+	clients int
 }
 
 // NewBigRed is Bigred constructor accepting proto and addr
@@ -42,6 +49,7 @@ func (b *Bigred) Run() error {
 		if err != nil {
 			return err
 		}
+		b.clients++
 		log.Println("Accepting Connection", conn.RemoteAddr().String())
 		go b.handleClient(conn)
 	}
@@ -55,12 +63,14 @@ func (b *Bigred) handleClient(conn net.Conn) (err error) {
 			log.Println("Closing Connection")
 		}
 		conn.Close()
+		b.clients--
 	}()
 	for {
 		commands, err := ParseRequest(conn)
 		if err != nil {
 			return err
 		}
+		// log.Println(commands.Args, commands.Name)
 		if err := b.executeCommand(commands, conn); err != nil {
 			return err
 		}
@@ -100,9 +110,44 @@ func (b *Bigred) executeCommand(cmd *Commands, conn net.Conn) error {
 	case "flushall":
 		b.Cache.Reset()
 		return replyOK(conn)
+	case "info":
+		// Give Info about server
+		return replyBulkString(conn, []byte(b.InfoServer()+b.InfoClients()))
 	case "ping":
 		return replySimpleString(conn, "PONG")
 	default:
 		return replyErrUnknownCommand(conn, cmd.Name)
 	}
+}
+
+func (b *Bigred) InfoServer() string {
+	executableDir, err := filepath.Abs(os.Args[0])
+	if err != nil {
+		executableDir = "unknown"
+	}
+	// Key order not preserved
+	mapInfo := map[string]interface{}{
+		"server": map[string]interface{}{
+			"bigred_version": "0.0.1",
+			"os":             runtime.GOOS,
+			"arch_bits":      runtime.GOARCH,
+			"process_id":     os.Getpid(),
+			"port":           b.Addr,
+			"executable":     executableDir,
+		},
+	}
+	var info string
+	for opt, mapVal := range mapInfo {
+		info += "#" + opt + "\n"
+		for key, val := range mapVal.(map[string]interface{}) {
+			info += fmt.Sprintf("%s: %v\n", key, val)
+		}
+	}
+	return info
+}
+
+func (b *Bigred) InfoClients() string {
+	info := "#Clients\n"
+	info += fmt.Sprintf("connected_clients: %v\n", b.clients)
+	return info
 }
