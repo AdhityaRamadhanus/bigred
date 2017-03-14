@@ -15,16 +15,8 @@ func replyNil(conn net.Conn) error {
 }
 
 func replyBulkString(conn net.Conn, message []byte) error {
-	lenBytes, messageBytes := respBulkString(message)
-	_, err := conn.Write(lenBytes)
-	if err != nil {
-		return err
-	}
-	_, err = conn.Write(messageBytes)
-	if err != nil {
-		return err
-	}
-	_, err = conn.Write([]byte("\r\n"))
+	messageBytes := respBulkString(message)
+	_, err := conn.Write(messageBytes)
 	return err
 }
 

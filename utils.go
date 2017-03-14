@@ -6,10 +6,11 @@ func respSimpleString(payload string) []byte {
 	return []byte("+" + payload + "\r\n")
 }
 
-// A bit weird here
-func respBulkString(payload []byte) ([]byte, []byte) {
-	lenBytes := []byte("$" + strconv.Itoa(len(payload)) + "\r\n")
-	return lenBytes, payload
+func respBulkString(payload []byte) []byte {
+	bytesBulk := []byte("$" + strconv.Itoa(len(payload)) + "\r\n")
+	bytesBulk = append(bytesBulk, payload...)
+	bytesBulk = append(bytesBulk, '\r', '\n')
+	return bytesBulk
 }
 
 func respInteger(payload int) []byte {
@@ -17,5 +18,5 @@ func respInteger(payload int) []byte {
 }
 
 func respError(message string) []byte {
-	return []byte("-ERR" + message + "\r\n")
+	return []byte("-ERR " + message + "\r\n")
 }
