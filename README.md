@@ -31,7 +31,8 @@ Usage
     3. DBSIZE //Currently only using one db
     4. DEL <key>
     5. FLUSHALL
-    6. PING // of course
+    6. INFO //currently no param supported
+    7. PING // of course
 ```
 
 ![screenshot](https://cloud.githubusercontent.com/assets/5761975/23824951/5b5e9c2a-06b3-11e7-8e9c-c68dc4ff45f4.png)
