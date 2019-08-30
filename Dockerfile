@@ -1,4 +1,4 @@
-FROM golang:1.7
+FROM golang:1.12.9
 
 # Copy the local package files to the container's workspace.
 ADD . /go/src/github.com/AdhityaRamadhanus/bigred

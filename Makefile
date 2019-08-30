@@ -1,7 +1,7 @@
 .PHONY: clean
 # add test later 
 # Flags #
-GO_FLAGS = -race -o
+GO_FLAGS = -v -race -o
 
 # target #
 
@@ -11,8 +11,7 @@ quick_build:
 	go build -o bigred
 
 build_bigred: 
-	go build $(GO_FLAGS) bigred
+	@echo "Build bigred"
+	@go build $(GO_FLAGS) bigred
+	@echo "...done"
 
-# the executable will be named bigred, always 
-clean:
-	-rm bigred
